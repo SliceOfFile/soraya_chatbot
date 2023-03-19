@@ -178,7 +178,7 @@ class Bot():
 
         if len(limit_messages) > 0:
           reply_text = random.choice(limit_messages)
-          await update.effective_message.reply_text(reply_text)
+          await update.message.reply_text(reply_text)
 
         logger.info(LOG_HANDLER_DAILY_TOKEN_LIMIT, {
           'message': message,
@@ -191,7 +191,7 @@ class Bot():
       handler_response = await self.__handler_message(update, context)
       prompts, chat_completion, reply_text = handler_response
 
-      await update.effective_message.reply_text(reply_text)
+      await update.message.reply_text(reply_text)
 
       total_tokens = int(chat_completion['usage']['total_tokens'])
       print('total_tokens', total_tokens)
@@ -215,7 +215,7 @@ class Bot():
       if len(error_reply_list) > 0:
         reply_text = random.choice(error_reply_list)
         try:
-          await update.effective_message.reply_text(reply_text)
+          await update.message.reply_text(reply_text)
         except Exception as e:
           reply_text = None
           pass
