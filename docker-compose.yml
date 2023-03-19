@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+
+  chatbot:
+    build:
+      context: .
+    restart: always
+    volumes:
+      - ./conf/chatbot.conf.yml:/usr/local/etc/chatbot/chatbot.conf.yml:ro
+      - ./src/chatbot:/opt/chatbot:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    env_file:
+      - .env
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis-data:/data:rw
+    command: [ 'redis-server', '/usr/local/etc/redis/redis.conf', '--requirepass', $REDIS_PASSWORD ]
+
+volumes:
+  redis-data:

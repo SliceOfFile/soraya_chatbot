@@ -1,0 +1,16 @@
+# Secrets
+.env
+
+# Compiled Python files
+__pycache__/
+*.pyc
+
+# Miscellaneous
+*.swp
+*.log
+*.bak
+*.tmp
+.DS_Store
+
+# Retain .gitkeep
+!.gitkeep

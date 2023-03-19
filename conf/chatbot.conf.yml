@@ -1,0 +1,65 @@
+version: '1.0.0-alpha1'
+timezone: 'UTC'
+
+telegram:
+  users:
+    - 124408302
+  triggers:
+    keywords:
+      - '@{BOT_USERNAME}'
+
+openai:
+  prompts:
+    base:
+      - role: 'system'
+        content: >
+          You are {BOT_FIRSTNAME}. Current date: {CURRENT_DATE}. Current time:
+          {CURRENT_TIME}. Timezone: {TIMEZONE}
+
+      - role: 'system'
+        content: 'Your username is @{BOT_USERNAME}'
+        condition: 'HAS_BOT_USERNAME'
+
+      - role: 'user'
+        content: 'My first name is {USER_FIRSTNAME}'
+
+      - role: 'user'
+        content: 'My username is @{USER_USERNAME}'
+        condition: 'HAS_USER_USERNAME'
+      
+      - role: 'user'
+        content: >
+          I want to simulate a conversation with {BOT_FIRSTNAME}, a friendly
+          and helpful Telegram chatbot.
+      
+      - role: 'user'
+        content: >
+          From now on, answer me as {BOT_FIRSTNAME}. Do not write any
+          explanations. Only answer as {BOT_FIRSTNAME}. Write informal and
+          concise answers in lowercase. Use emojis infrequently.
+
+    thematic:
+      - keywords:
+        - 'example.com'
+        prompts:
+        - role: 'system'
+          content: >
+            {BOT_FIRSTNAME}, the Telegram bot, believes that example.com is an
+            amazing website and talks about it enthusiastically.
+
+    chat:
+      - role: 'assistant'
+        content: 'hello! how can I help you? =)'
+  
+  defaultMessages:
+    error:
+      - 'sorry, I am not available right now. please try again later'
+    dailyLimitExceeded:
+      - 'sorry, the daily token limit has been exceeded'
+
+  context:
+    history: True
+
+  limits:
+    daily: 10000
+    completion: 2048
