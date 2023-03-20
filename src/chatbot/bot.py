@@ -129,6 +129,10 @@ class Bot():
 
     if chat.type == ChatType.PRIVATE:
       return True
+        
+    if (message.reply_to_message is not None and
+        message.reply_to_message.from_user.id == self.__id):
+      return True
 
     for element in keywords:
       if str_includes(message.text, element):
