@@ -3,11 +3,12 @@ import soraya_slog as logger
 from common import exc_to_dict, str_includes
 from datetime import datetime
 from openai import ChatCompletion
+from storage import Storage
 from strings import *
 from telegram import Message, Update
 from telegram.constants import ChatType
 from telegram.ext import ContextTypes
-from storage import Storage
+from tenacity import retry, wait_exponential, stop_after_attempt
 
 class Bot():
   def __init__(self,
@@ -145,6 +146,16 @@ class Bot():
 
   def __filter_reply_text(self, reply_text: str) -> str:
     return reply_text
+  
+  @retry(wait=wait_exponential(multiplier=1, min=6, max=16),
+         stop=stop_after_attempt(8),
+         reraise=True)
+  def __create_chat_completion(self,
+                               messages: list[dict],
+                               max_tokens: int) -> dict:
+    return ChatCompletion.create(model='gpt-4',
+                                 messages=messages,
+                                 max_tokens=max_tokens)
 
   async def __handler_message(
       self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -152,9 +163,7 @@ class Bot():
     max_tokens = self.__configuration['openai']['limits']['completion']
     messages = self.__build_prompts(update)
 
-    chat_completion = ChatCompletion.create(model='gpt-3.5-turbo',
-                                            messages=messages,
-                                            max_tokens=max_tokens)
+    chat_completion = self.__create_chat_completion(messages, max_tokens)
     
     reply_text = chat_completion['choices'][0]['message']['content']
     return messages, chat_completion, self.__filter_reply_text(reply_text)
