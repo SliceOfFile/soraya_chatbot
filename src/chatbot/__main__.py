@@ -45,7 +45,7 @@ def main():
   })
 
   filters_type = f.UpdateType.MESSAGE & f.TEXT & ~f.FORWARDED & ~f.COMMAND
-  filters_users = f.Chat(chat_id=chat_id) | f.Chat(username=username)
+  filters_users = f.Chat(chat_id) | f.Chat(username=username)
   filters = filters_type & filters_users
 
   application.add_handler(MessageHandler(filters, bot.handler_message))

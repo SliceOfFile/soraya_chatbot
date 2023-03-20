@@ -129,7 +129,7 @@ class Bot():
 
     if chat.type == ChatType.PRIVATE:
       return True
-    
+
     for element in keywords:
       if str_includes(message.text, element):
         return True
@@ -170,7 +170,6 @@ class Bot():
         return
       
       current_token_usage = s.get_daily_token_usage()
-      print('current_token_usage', current_token_usage)
       
       if daily_limit > 0 and current_token_usage >= daily_limit:
         reply_text = None
@@ -194,9 +193,7 @@ class Bot():
       await update.message.reply_text(reply_text)
 
       total_tokens = int(chat_completion['usage']['total_tokens'])
-      print('total_tokens', total_tokens)
       updated_token_usage = current_token_usage + total_tokens
-      print('updated_token_usage', updated_token_usage)
 
       s.set_daily_token_usage(updated_token_usage)
 
