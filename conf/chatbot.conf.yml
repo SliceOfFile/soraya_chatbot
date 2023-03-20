@@ -6,7 +6,7 @@ telegram:
     - 124408302
   triggers:
     keywords:
-      - '@{BOT_USERNAME}'
+      - 'trigger_word'
 
 openai:
   prompts:
