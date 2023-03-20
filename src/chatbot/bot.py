@@ -152,7 +152,7 @@ class Bot():
     max_tokens = self.__configuration['openai']['limits']['completion']
     messages = self.__build_prompts(update)
 
-    chat_completion = ChatCompletion.create(model='gpt-4',
+    chat_completion = ChatCompletion.create(model='gpt-3.5-turbo',
                                             messages=messages,
                                             max_tokens=max_tokens)
     
