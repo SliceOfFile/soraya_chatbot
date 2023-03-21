@@ -124,7 +124,8 @@ class Bot():
     return result
   
   def __should_reply(self, update: Update) -> bool:
-    keywords = self.__configuration['telegram']['triggers']['keywords']
+    raw_keywords = self.__configuration['telegram']['triggers']['keywords']
+    keywords = [self.__parse_content(update, word) for word in raw_keywords]
     chat = update.effective_chat
     message = update.effective_message
 
@@ -151,11 +152,15 @@ class Bot():
          stop=stop_after_attempt(8),
          reraise=True)
   def __create_chat_completion(self,
+                               update: Update,
                                messages: list[dict],
                                max_tokens: int) -> dict:
-    return ChatCompletion.create(model='gpt-4',
+    model = self.__configuration['openai']['model']
+    user_id = update.effective_user.id
+    return ChatCompletion.create(model=model,
                                  messages=messages,
-                                 max_tokens=max_tokens)
+                                 max_tokens=max_tokens,
+                                 user=str(user_id))
 
   async def __handler_message(
       self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -163,7 +168,9 @@ class Bot():
     max_tokens = self.__configuration['openai']['limits']['completion']
     messages = self.__build_prompts(update)
 
-    chat_completion = self.__create_chat_completion(messages, max_tokens)
+    chat_completion = self.__create_chat_completion(update,
+                                                    messages,
+                                                    max_tokens)
     
     reply_text = chat_completion['choices'][0]['message']['content']
     return messages, chat_completion, self.__filter_reply_text(reply_text)

@@ -1,4 +1,4 @@
-version: '1.0.0-alpha1'
+version: '1.0.0-alpha2'
 timezone: 'UTC'
 
 telegram:
@@ -6,9 +6,11 @@ telegram:
     - 124408302
   triggers:
     keywords:
-      - 'trigger_word'
+      - '{BOT_USERNAME}'
+      - '@{BOT_USERNAME}'
 
 openai:
+  model: 'gpt-3.5-turbo'
   prompts:
     base:
       - role: 'system'

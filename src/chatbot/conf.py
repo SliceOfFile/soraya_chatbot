@@ -28,6 +28,7 @@ def __parse(data: dict) -> None:
       'triggers': { 'keywords': [] }
     },
     'openai': {
+      'model': 'gpt-3.5-turbo',
       'prompts': {
         'base': [],
         'thematic': [],
@@ -52,7 +53,7 @@ def __parse(data: dict) -> None:
   openai_limits = openai.get('limits', {})
   openai_context = openai.get('context', {})
 
-  if version != '1.0.0-alpha1':
+  if version != '1.0.0-alpha2':
     raise ConfigurationError(EXC_CONF_BAD_VERSION.format(data['version']))
   
   try:
@@ -67,6 +68,9 @@ def __parse(data: dict) -> None:
 
   if isinstance(telegram_triggers.get('keywords'), list):
     conf['telegram']['triggers']['keywords'] = telegram_triggers['keywords']
+
+  if isinstance(openai.get('model'), str):
+    conf['openai']['model'] = openai['model']
 
   if isinstance(openai_prompts.get('base'), list):
     prompt_list = __parse_prompt_list(openai_prompts['base'])
