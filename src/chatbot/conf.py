@@ -1,6 +1,6 @@
 import yaml
 from exceptions import ConfigurationError
-from strings import EXC_CONF_LOAD, EXC_CONF_BAD_VERSION, EXC_CONF_BAD_HISTORY_VALUE, EXC_CONF_BAD_TIMEZONE_VALUE, EXC_CONF_BAD_PROMPT_VALUE
+from strings import EXC_CONF_LOAD, EXC_CONF_BAD_VERSION, EXC_CONF_BAD_TIMEZONE_VALUE, EXC_CONF_BAD_PROMPT_VALUE
 import pytz
 
 __CONF_PATH = '/usr/local/etc/chatbot/chatbot.conf.yml'
@@ -38,8 +38,14 @@ def __parse(data: dict) -> None:
         'error': [],
         'dailyLimitExceeded': []
       },
-      'limits': { 'daily': 10000, 'completion': 1024 },
-      'context': { 'history': False }
+      'limits': {
+        'daily': 10000,
+        'completion': 1024
+      },
+      'context': {
+        'history': False,
+        'suppressTriggerUsername': False
+      }
     }
   }
 
@@ -53,7 +59,7 @@ def __parse(data: dict) -> None:
   openai_limits = openai.get('limits', {})
   openai_context = openai.get('context', {})
 
-  if version != '1.0.0-alpha2':
+  if version != '1.0.0-alpha3':
     raise ConfigurationError(EXC_CONF_BAD_VERSION.format(data['version']))
   
   try:
@@ -116,6 +122,10 @@ def __parse(data: dict) -> None:
 
   if isinstance(openai_context.get('history'), bool):
     conf['openai']['context']['history'] = openai_context['history']
+
+  if isinstance(openai_context.get('suppressTriggerUsername'), bool):
+    val = openai_context['suppressTriggerUsername']
+    conf['openai']['context']['suppressTriggerUsername'] = val
 
   return conf
 

@@ -1,4 +1,5 @@
 import random
+import re
 import soraya_slog as logger
 from common import exc_to_dict, str_includes
 from datetime import datetime
@@ -106,9 +107,12 @@ class Bot():
     return result
 
   def __build_prompts(self, update: Update) -> list[dict]:
-    use_history = self.__configuration['openai']['context']['history']
-    base_prompts = self.__configuration['openai']['prompts']['base']
-    chat_prompts = self.__configuration['openai']['prompts']['chat']
+    context = self.__configuration['openai']['context']
+    prompts = self.__configuration['openai']['prompts']
+    base_prompts = prompts['base']
+    chat_prompts = prompts['chat']
+    suppress_trigger_username = context['suppressTriggerUsername']
+    use_history = context['history']
     result = []
 
     result.extend(self.__build_prompts_common(update, base_prompts))
@@ -118,7 +122,8 @@ class Bot():
     if use_history:
       result.extend(self.__build_prompts_history(update))
 
-    content = self.__filter_message_text(update.effective_message.text)
+    content = self.__filter_message_text(update.effective_message.text,
+                                         suppress_trigger_username)
     result.append({ 'role': 'user', 'content': content})
 
     return result
@@ -142,8 +147,13 @@ class Bot():
     
     return False
   
-  def __filter_message_text(self, message_text: str) -> str:
-    return message_text[:280]
+  def __filter_message_text(self,
+                            message_text: str,
+                            suppress_trigger_username: bool = False) -> str:
+    filtered = message_text[:512]
+    if suppress_trigger_username:
+      filtered = re.sub(r'^@[a-zA-Z0-9_]+\s*', '', filtered)
+    return filtered
 
   def __filter_reply_text(self, reply_text: str) -> str:
     return reply_text

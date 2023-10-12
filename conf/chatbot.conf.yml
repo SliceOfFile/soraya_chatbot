@@ -1,4 +1,4 @@
-version: '1.0.0-alpha2'
+version: '1.0.0-alpha3'
 timezone: 'UTC'
 
 telegram:
@@ -61,6 +61,7 @@ openai:
 
   context:
     history: True
+    suppressTriggerUsername: True
 
   limits:
     daily: 10000
